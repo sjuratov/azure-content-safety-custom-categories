@@ -1,0 +1,54 @@
+@api_key = {{$dotenv API_KEY}}
+@endpoint = {{$dotenv ENDPOINT}}
+@category_name = {{$dotenv CATEGORY_NAME}}
+@category_version = {{$dotenv CATEGORY_VERSION}}
+@category_definition = {{$dotenv CATEGORY_DEFINITION}}
+@azure_storage_url = {{$dotenv AZURE_STORAGE_URL}}
+@azure_storage_container = {{$dotenv AZURE_STORAGE_CONTAINER}}
+
+### Create new category version
+curl -X PUT "{{endpoint}}/contentsafety/text/categories/{{category_name}}?api-version=2024-09-15-preview" \
+     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
+     -H "Content-Type: application/json" \
+     -d "{
+            \"categoryName\": \"{{category_name}}\",
+            \"definition\": \"{{category_definition}}\",
+            \"sampleBlobUrl\": \"{{azure_storage_url}}/{{azure_storage_container}}/survival-advice.jsonl\"
+        }"
+
+### Start the category build process
+curl -X POST "{{endpoint}}/contentsafety/text/categories/{{category_name}}:build?api-version=2024-09-15-preview&version={{category_version}}" \
+     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
+     -H "Content-Type: application/json"
+
+### Get the category build status
+@operation_id = "202"  ### Replace with actual operation ID from previous step
+curl -X GET "{{endpoint}}/contentsafety/text/categories/operations/{{operation_id}}?api-version=2024-09-15-preview" \
+     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
+     -H "Content-Type: application/json"
+
+### Analyze text with a customized category
+@example_text = "Creating fire without matches or a lighter in a rainy environment."
+curl -X POST "{{endpoint}}/contentsafety/text:analyzeCustomCategory?api-version=2024-09-15-preview" \
+     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
+     -H "Content-Type: application/json" \
+     -d "{
+            \"text\": \"{{example_text}}\",
+            \"categoryName\": \"{{category_name}}\",
+            \"version\": {{category_version}}
+        }"
+
+### List categories of their latest versions
+curl -X GET "{{endpoint}}/contentsafety/text/categories?api-version=2024-09-15-preview" \
+     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
+     -H "Content-Type: application/json"
+
+### Get a customized category or a specific version of it
+curl -X GET "{{endpoint}}/contentsafety/text/categories/{{category_name}}?api-version=2024-09-15-preview&version={{category_version}}" \
+     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
+     -H "Content-Type: application/json"
+
+### Delete a customized category or a specific version of it
+curl -X DELETE "{{endpoint}}/contentsafety/text/categories/{{category_name}}?api-version=2024-09-15-preview&version={{category_version}}" \
+     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
+     -H "Content-Type: application/json"
