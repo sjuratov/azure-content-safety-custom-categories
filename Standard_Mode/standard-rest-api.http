@@ -33,9 +33,9 @@ curl -X POST "{{endpoint}}/contentsafety/text:analyzeCustomCategory?api-version=
      -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
      -H "Content-Type: application/json" \
      -d "{
-            \"text\": \"{{example_text}}\",
-            \"categoryName\": \"{{category_name}}\",
-            \"version\": {{category_version}}
+          \"text\": \"{{example_text}}\",
+          \"categoryName\": \"{{category_name}}\",
+          \"version\": {{category_version}}
         }"
 
 ### List categories of their latest versions

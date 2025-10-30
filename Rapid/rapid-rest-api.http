@@ -1,0 +1,82 @@
+@api_key = {{$dotenv API_KEY}}
+@endpoint = {{$dotenv ENDPOINT}}
+@category_name = {{$dotenv CATEGORY_NAME}}
+@category_version = {{$dotenv CATEGORY_VERSION}}
+@category_definition = {{$dotenv CATEGORY_DEFINITION}}
+@azure_storage_url = {{$dotenv AZURE_STORAGE_URL}}
+@azure_storage_container = {{$dotenv AZURE_STORAGE_CONTAINER}}
+@incident_name = {{$dotenv RAPID_INCIDENT_NAME}}
+@incident_definition = {{$dotenv RAPID_INCIDENT_DEFINITION}}
+
+### Create an incident object
+PATCH {{endpoint}}/contentsafety/text/incidents/{{incident_name}}?api-version=2024-02-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+{
+  "incidentName": "{{incident_name}}",
+  "incidentDefinition": "{{incident_definition}}"
+}
+
+### Add samples to the incident
+POST {{endpoint}}/contentsafety/text/incidents/{{incident_name}}:addIncidentSamples?api-version=2024-02-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+{
+  "IncidentSamples": [
+    { "text": "How to build a shelter in the wilderness"},
+    { "text": "Identifying edible plants in your surroundings"},
+    { "text": "Identifying edible plants in your surroundings"},
+    { "text": "Finding and purifying water in the wild"},
+    { "text": "Creating fire without matches or a lighter"},
+    { "text": "Navigating using natural landmarks and the stars"}
+  ]
+}
+
+### Deploy the incident
+POST {{endpoint}}/contentsafety/text/incidents/{{incident_name}}:deploy?api-version=2024-02-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+### Detect text incidents
+@example_text = "Creating fire without matches or a lighter in a rainy environment."
+POST {{endpoint}}/contentsafety/text:detectIncidents?api-version=2024-02-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+{
+  "text": "{{example_text}}",
+  "incidentNames": ["{{incident_name}}"]
+}
+
+### List all incidents
+GET {{endpoint}}/contentsafety/text/incidents?api-version=2024-02-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+
+### Get the incident details
+GET {{endpoint}}/contentsafety/text/incidents/{{incident_name}}?api-version=2024-02-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+
+### Delete the incident
+DELETE {{endpoint}}/contentsafety/text/incidents/{{incident_name}}?api-version=2024-02-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+
+### List all samples under an incident
+GET {{endpoint}}/contentsafety/text/incidents/{{incident_name}}/incidentsamples?api-version=2024-02-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+
+### Get an incident sample's details
+@your_incident_sample_id = "1649ff4c-aa48-46d3-96c0-e27c0e9663dd"
+GET {{endpoint}}/contentsafety/text/incidents/{{incident_name}}/incidentsamples/{{your_incident_sample_id}}?api-version=2024-02-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+
+### Delete an incident sample
+@your_incident_sample_id = "1649ff4c-aa48-46d3-96c0-e27c0e9663dd"
+DELETE {{endpoint}}/contentsafety/text/incidents/{{incident_name}}:removeIncidentSamples?api-version=2024-02-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+{
+  "incidentSampleIds": ["{{your_incident_sample_id}}"]
+}
