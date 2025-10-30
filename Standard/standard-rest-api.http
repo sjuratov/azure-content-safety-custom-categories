@@ -5,50 +5,53 @@
 @category_definition = {{$dotenv CATEGORY_DEFINITION}}
 @azure_storage_url = {{$dotenv AZURE_STORAGE_URL}}
 @azure_storage_container = {{$dotenv AZURE_STORAGE_CONTAINER}}
+@training_data_set = {{$dotenv TRAINING_DATA_SET}}
 
 ### Create new category version
-curl -X PUT "{{endpoint}}/contentsafety/text/categories/{{category_name}}?api-version=2024-09-15-preview" \
-     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
-     -H "Content-Type: application/json" \
-     -d "{
-            \"categoryName\": \"{{category_name}}\",
-            \"definition\": \"{{category_definition}}\",
-            \"sampleBlobUrl\": \"{{azure_storage_url}}/{{azure_storage_container}}/survival-advice.jsonl\"
-        }"
+PUT {{endpoint}}/contentsafety/text/categories/{{category_name}}?api-version=2024-09-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+{
+    "categoryName": "{{category_name}}",
+    "definition": "{{category_definition}}",
+    "sampleBlobUrl": "{{azure_storage_url}}/{{azure_storage_container}}/{{training_data_set}}"
+}
 
 ### Start the category build process
-curl -X POST "{{endpoint}}/contentsafety/text/categories/{{category_name}}:build?api-version=2024-09-15-preview&version={{category_version}}" \
-     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
-     -H "Content-Type: application/json"
+POST {{endpoint}}/contentsafety/text/categories/{{category_name}}:build?api-version=2024-09-15-preview&version={{category_version}}
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
 
 ### Get the category build status
-@operation_id = "202"  ### Replace with actual operation ID from previous step
-curl -X GET "{{endpoint}}/contentsafety/text/categories/operations/{{operation_id}}?api-version=2024-09-15-preview" \
-     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
-     -H "Content-Type: application/json"
+@operation_id = "52b49f98-dbf7-4531-9a34-cbb8d8c3063b"  ### Replace with actual operation ID from previous step
+GET {{endpoint}}/contentsafety/text/categories/operations/{{operation_id}}?api-version=2024-09-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
 
 ### Analyze text with a customized category
 @example_text = "Creating fire without matches or a lighter in a rainy environment."
-curl -X POST "{{endpoint}}/contentsafety/text:analyzeCustomCategory?api-version=2024-09-15-preview" \
-     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
-     -H "Content-Type: application/json" \
-     -d "{
-          \"text\": \"{{example_text}}\",
-          \"categoryName\": \"{{category_name}}\",
-          \"version\": {{category_version}}
-        }"
+POST {{endpoint}}/contentsafety/text:analyzeCustomCategory?api-version=2024-09-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
+
+{
+    "text": "{{example_text}}",
+    "categoryName": "{{category_name}}",
+    "version": {{category_version}}
+}
 
 ### List categories of their latest versions
-curl -X GET "{{endpoint}}/contentsafety/text/categories?api-version=2024-09-15-preview" \
-     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
-     -H "Content-Type: application/json"
+GET {{endpoint}}/contentsafety/text/categories?api-version=2024-09-15-preview
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
 
 ### Get a customized category or a specific version of it
-curl -X GET "{{endpoint}}/contentsafety/text/categories/{{category_name}}?api-version=2024-09-15-preview&version={{category_version}}" \
-     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
-     -H "Content-Type: application/json"
+GET {{endpoint}}/contentsafety/text/categories/{{category_name}}?api-version=2024-09-15-preview&version={{category_version}}
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
 
 ### Delete a customized category or a specific version of it
-curl -X DELETE "{{endpoint}}/contentsafety/text/categories/{{category_name}}?api-version=2024-09-15-preview&version={{category_version}}" \
-     -H "Ocp-Apim-Subscription-Key: {{api_key}}" \
-     -H "Content-Type: application/json"
+DELETE {{endpoint}}/contentsafety/text/categories/{{category_name}}?api-version=2024-09-15-preview&version={{category_version}}
+Ocp-Apim-Subscription-Key: {{api_key}}
+Content-Type: application/json
